@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 
 def detect_language(text: str) -> str | None:
     try:
-        return detect(text) if text and len(text) > 20 else Non
+        return detect(text) if text and len(text) > 20 else None
     except LangDetectException:
         return None
 
