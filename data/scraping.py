@@ -127,8 +127,8 @@ def scrape_and_store(company_domain: str) -> None:
         f"For {domain}, scraped {page_number} pages, inserted {total_inserted} and skipped {total_skipped}"
     )
 
-    if __name__ == "__main__":
-        domains = get_domains()
-        for domain in domains:
-            print(f"Scraping {domain}")
-            scrape_and_store(domain)
+if __name__ == "__main__":
+    domains = get_domains()
+    for domain in domains:
+        print(f"Scraping {domain}")
+        scrape_and_store(domain)
