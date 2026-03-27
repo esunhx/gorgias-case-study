@@ -13,7 +13,7 @@ def setup_reviews_table():
         bigquery.SchemaField("star_rating", "INTEGER", mode="REQUIRED"),
         bigquery.SchemaField("date_published", "TIMESTAMP", mode="REQUIRED"),
         bigquery.SchemaField("reviewer_name", "STRING", mode="NULLABLE"),
-        bigquery.SchemaField("comapny_replied", "BOOL", mode="REQUIRED"),
+        bigquery.SchemaField("company_replied", "BOOL", mode="REQUIRED"),
         bigquery.SchemaField("language", "STRING", mode="NULLABLE"),
         bigquery.SchemaField("has_text", "BOOL", mode="REQUIRED"),
         bigquery.SchemaField("scraped_at", "TIMESTAMP", mode="REQUIRED")

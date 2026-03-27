@@ -18,7 +18,7 @@ def parse_date(date_str: str | None) -> str | None:
         return None
     try:
         dt = datetime.fromisoformat(date_str.replace("Z", "+00:00"))
-        return dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+        return dt.isoformat()
     except ValueError:
         return None
 
@@ -35,14 +35,25 @@ def parse_review(review: dict, company_domain: str) -> dict | None:
     title = clean_text(review.get("title"))
 
     return {
-        "domain":          company_domain,
-        "title":           title,
-        "text":            text,
-        "star_rating":     rating,
-        "date_published":  date_published,
-        "reviewer_name":   clean_text(review.get("consumer", {}).get("displayName")),
+        "domain": company_domain,
+        "title": title,
+        "text": text,
+        "star_rating": rating,
+        "date_published": date_published,
+        "reviewer_name": clean_text(review.get("consumer", {}).get("displayName")),
         "company_replied": review.get("reply") is not None,
-        "language":        detect_language(text),
-        "has_text":        text is not None,
-        "scraped_at":      datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "language": detect_language(text),
+        "has_text": text is not None,
+        "scraped_at": datetime.now(timezone.utc).isoformat(),
     }
+
+def format_date(row: dict) -> dict:
+    formatted = {}
+    for key, value in row.items():
+        if isinstance(value, datetime):
+            formatted[key] = value.isoformat()
+        elif value is None:
+            formatted[key] = None
+        else:
+            formatted[key] = value
+    return formatted

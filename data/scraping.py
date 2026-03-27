@@ -1,6 +1,6 @@
 from curl_cffi import requests as cffi_requests
 from google.cloud import bigquery
-from data.cleaning  import parse_review
+from data.cleaning  import parse_review, format_date
 
 import re
 import json
@@ -44,24 +44,25 @@ def insert_to_bq(rows: list[dict]) -> None:
     if not rows:
         return
 
+    formatted_rows = [format_date(row) for row in rows]
     temp_table = f"{PROJECT_ID}.{DATASET_ID}.temp"
-    job_config = bq.LoadJobConfig(
+    job_config = bigquery.LoadJobConfig(
         write_disposition="WRITE_TRUNCATE",
         schema = [
             bigquery.SchemaField("domain", "STRING", mode="REQUIRED"),
             bigquery.SchemaField("title", "STRING", mode="NULLABLE"),
             bigquery.SchemaField("text", "STRING", mode="NULLABLE"),
             bigquery.SchemaField("star_rating", "INTEGER", mode="REQUIRED"),
-            bigquery.SchemaField("date_published", "INTEGER", mode="REQUIRED"),
+            bigquery.SchemaField("date_published", "TIMESTAMP", mode="REQUIRED"),
             bigquery.SchemaField("reviewer_name", "STRING", mode="NULLABLE"),
-            bigquery.SchemaField("comapny_replied", "BOOL", mode="REQUIRED"),
+            bigquery.SchemaField("company_replied", "BOOL", mode="REQUIRED"),
             bigquery.SchemaField("language", "STRING", mode="NULLABLE"),
             bigquery.SchemaField("has_text", "BOOL", mode="REQUIRED"),
             bigquery.SchemaField("scraped_at", "TIMESTAMP", mode="REQUIRED")
         ]
     )
     
-    job = bq.load_table_from_json(rows, temp_table, job_config=job_config)
+    job = bq.load_table_from_json(formatted_rows, temp_table, job_config=job_config)
     job.result()
 
     merge_query = f"""
@@ -73,11 +74,11 @@ def insert_to_bq(rows: list[dict]) -> None:
         WHEN NOT MATCHED THEN
             INSERT (
                 domain, title, text, star_rating, date_published, reviewer_name,
-                complany_replied, language, has_text, scraped_at
+                company_replied, language, has_text, scraped_at
             )
             VALUES (
                 source.domain, source.title, source.text, source.star_rating, source.date_published,
-                source.reviewer_name, soure.complany_replied, source.language, source.has_text, 
+                source.reviewer_name, source.company_replied, source.language, source.has_text, 
                 source.scraped_at
             )
     """
