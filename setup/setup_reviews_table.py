@@ -1,9 +1,9 @@
 from google.cloud import bigquery
 
 PROJECT_ID = "gorgias-case-study-491217"
-DATASET_ID = "lead-enrichment"
+DATASET_ID = "lead_enrichment"
 
-def setup_companies_table():
+def setup_reviews_table():
     client = bigquery.Client(project=PROJECT_ID)
     
     schema = [
@@ -11,7 +11,7 @@ def setup_companies_table():
         bigquery.SchemaField("title", "STRING", mode="NULLABLE"),
         bigquery.SchemaField("text", "STRING", mode="NULLABLE"),
         bigquery.SchemaField("star_rating", "INTEGER", mode="REQUIRED"),
-        bigquery.SchemaField("date_published", "INTEGER", mode="REQUIRED"),
+        bigquery.SchemaField("date_published", "TIMESTAMP", mode="REQUIRED"),
         bigquery.SchemaField("reviewer_name", "STRING", mode="NULLABLE"),
         bigquery.SchemaField("comapny_replied", "BOOL", mode="REQUIRED"),
         bigquery.SchemaField("language", "STRING", mode="NULLABLE"),
@@ -21,11 +21,11 @@ def setup_companies_table():
 
     table = bigquery.Table(f"{PROJECT_ID}.{DATASET_ID}.reviews", schema=schema)
     table.time_partitioning = bigquery.TimePartitioning(
-        type=bigquery.TimePartitioningType.DAY,
+        type_=bigquery.TimePartitioningType.DAY,
         field="date_published"
     )
     table.clustering_fields = ["domain", "star_rating"]
-    client.create_table(table, exists_ok=TRUE)
+    client.create_table(table, exists_ok=True)
 
 if __name__ == "__main__":
-    setup_companies_table()
+    setup_reviews_table()

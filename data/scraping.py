@@ -7,7 +7,7 @@ import json
 import time
 
 PROJECT_ID = "gorgias-case-study-491217"
-DATASET_ID = "lead-enrichment"
+DATASET_ID = "lead_enrichment"
 TABLE_ID = "reviews"
 
 bq = bigquery.Client(project=PROJECT_ID)

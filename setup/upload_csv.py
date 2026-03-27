@@ -3,7 +3,7 @@ import csv
 from google.cloud import bigquery
 
 PROJECT_ID = "gorgias-case-study-491217"
-DATASET_ID = "lead-enrichment"
+DATASET_ID = "lead_enrichment"
 TABLE_ID = "leads"
 
 bq = bigquery.Client(project=PROJECT_ID)
@@ -36,4 +36,4 @@ def upload_leads(filepath: str) -> None:
     print(f"Succesfully uploaded {len(leads)} leads to {table_ref}")
 
 if __name__ == "__main__":
-    upload_leads("./leads/mock_leads.csv")
+    upload_leads("setup/leads/mock_leads.csv")
