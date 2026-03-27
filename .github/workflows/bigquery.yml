@@ -27,3 +27,8 @@ jobs:
       
       - name: Scaper
         run: python3 data/scraping.py
+      
+      - name: Enricher
+        run: python3 data/enrichment.py
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
