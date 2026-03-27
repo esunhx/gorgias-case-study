@@ -11,11 +11,11 @@ def setup_companies_table():
     client.create_dataset(dataset, exists_ok=TRUE)
     
     schema = [
-        bigquery.SchemaField("domain", "STRING", mode="REQUIRED")
-        bigquery.SchemaField("company_name", "STRING", mode="REQUIRED")
-        bigquery.SchemaField("industry", "STRING", mode="NULLABLE")
-        bigquery.SchemaField("country", "STRING", mode="NULLABLE")
-        bigquery.SchemaField("employee_count", "INTEGER", mode="NULLABLE")
+        bigquery.SchemaField("domain", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("company_name", "STRING", mode="REQUIRED"),
+        bigquery.SchemaField("industry", "STRING", mode="NULLABLE"),
+        bigquery.SchemaField("country", "STRING", mode="NULLABLE"),
+        bigquery.SchemaField("employee_count", "INTEGER", mode="NULLABLE"),
         bigquery.SchemaField("year_founded", "INTEGER", mode="NULLABLE")
     ]
 
