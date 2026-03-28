@@ -1,8 +1,12 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import sys
+import os
 
 from queries import get_overview, get_category, get_pain_points, get_reviews
+
+sys.path.insert(0, os.path.dirname(__file__))
 
 st.set_page_config(
     page_title = "Gorgias Case-Study",
