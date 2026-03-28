@@ -5,11 +5,11 @@ from google.oauth2 import service_account
 from google.cloud import bigquery
 
 credentials = service_account.Credentials.from_service_account_info(
-    json.loads(st.secrets["gcp"]["credentials"])
+    json.loads(st.secrets["gcp_service_account"])
 )
 
 bq = bigquery.Client(
-    project="gorgias-case-study-491217",
+    project=credentials.project_id,
     credentials=credentials
 )
 
