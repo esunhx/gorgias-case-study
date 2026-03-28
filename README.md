@@ -98,7 +98,7 @@ SET star_rating = CASE
     WHEN star_rating < 1 THEN 1
     WHEN star_rating > 5 THEN 5
 END
-WHERE star_rating NOT BETWEEN 1 AND 5 AND star_rating NOT NULL;
+WHERE star_rating NOT BETWEEN 1 AND 5 AND star_rating IS NOT NULL;
 
 -- Null out implausible dates (before 2010)
 UPDATE `gorgias-case-study-491217.lead_enrichment.reviews`

@@ -34,7 +34,7 @@ SET star_rating = CASE
     WHEN star_rating > 5 THEN 5
 END
 WHERE star_rating NOT BETWEEN 1 AND 5
-    AND star_rating NOT NULL;
+    AND star_rating IS NOT NULL;
 
 UPDATE `gorgias-case-study-491217.lead_enrichment.reviews`
 SET date_published = NULL
