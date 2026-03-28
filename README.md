@@ -1,4 +1,4 @@
-# Gorgias Analytics Engineer — Case Study
+# Gorgias Growth Analytics Engineer — Case Study
 
 ---
 
