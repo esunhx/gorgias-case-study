@@ -1,6 +1,17 @@
+import streamlit as st
+import json
+
+from google.oauth2 import service_account
 from google.cloud import bigquery
 
-bq = bigquery.Client(project="gorgias-case-study-491217")
+credentials = service_account.Credentials.from_service_account_info(
+    json.loads(st.secrets["gcp"]["credentials"])
+)
+
+bq = bigquery.Client(
+    project="gorgias-case-study-491217",
+    credentials=credentials
+)
 
 def get_overview() -> list[dict]:
     query = """
