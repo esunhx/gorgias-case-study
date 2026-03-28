@@ -1,4 +1,5 @@
 venv/
 activate/
-data/__pycache__
-dashboard/__pycache__
+__pycache__/
+*.pyc
+*.pyo
