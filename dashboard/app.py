@@ -10,10 +10,10 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 st.set_page_config(
     page_title = "Gorgias Case-Study",
-    page_icon = "📊",
+    page_icon = ":bar_chart:",
     layout = "wide"
 )
-st.title("📊 Lead Insight Dashboard")
+st.title(":bar_chart: Lead Insight Dashboard")
 
 st.header("Overview")
 
@@ -115,7 +115,7 @@ if selected:
         st.caption(f"Showing {len(filtered)} of {len(reviews)} reviews")
 
         for _, rev in filtered.iterrows():
-            sentiment_emoji = {"positive": "🟢", "neutral": "🟡", "negative": "🔴"}.get(rev["sentiment"], "⚪")
+            sentiment_emoji = {"positive": "\U0001F7E2", "neutral": "\U0001F7E1", "negative": "\U0001F534"}.get(rev["sentiment"], "\u26AA")
             with st.expander(
                 f"{sentiment_emoji} ⭐ {rev['star_rating']}/5 — {rev['reviewer_name']} · {rev['date_published'].strftime('%d %b %Y')}"
             ):
