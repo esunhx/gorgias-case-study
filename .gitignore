@@ -1,3 +1,4 @@
 venv/
 activate/
-__pycache__
+data/__pycache__
+dashboard/__pycache__
