@@ -13,7 +13,7 @@ def get_overview() -> list[dict]:
             ROUND(COUNTIF(r.sentiment = 'negative') * 100 / COUNT(*), 1) AS negative_ratio,
             ROUND(COUNTIF(r.sentiment = 'neutral') * 100 / COUNT(*), 1) AS neutral_ratio,
             COUNTIF(r.company_replied) AS total_replies,
-            ROUND(COUNTIF(r.company_repied) * 100 / COUNT(*), 1) AS reply_ratio
+            ROUND(COUNTIF(r.company_replied) * 100 / COUNT(*), 1) AS reply_ratio
         FROM `gorgias-case-study-491217.lead_enrichment.reviews` r
         LEFT JOIN `gorgias-case-study-491217.lead_enrichment.leads` l
             ON r.domain = l.domain
@@ -54,7 +54,7 @@ def get_pain_points(domain: str) -> list[dict]:
     """
     return [dict(row) for row in bq.query(query).result()]
 
-def get_reviews(doamin: str) -> list[dict]:
+def get_reviews(domain: str) -> list[dict]:
     query = f"""
         SELECT
             reviewer_name,

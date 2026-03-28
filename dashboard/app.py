@@ -1,10 +1,12 @@
 import streamlit as st
 import pandas as pd
+import plotly.express as px
+
 from queries import get_overview, get_category, get_pain_points, get_reviews
 
 st.set_page_config(
     page_title = "Gorgias Case-Study",
-    page_icon = "📊"
+    page_icon = "📊",
     layout = "wide"
 )
 st.title("📊 Lead Insight Dashboard")
@@ -24,7 +26,7 @@ def colour_rating(val):
 
 st.dataframe(
     df.style.applymap(colour_rating, subset=["avg_rating"]),
-    user_container_width=True,
+    use_container_width=True,
     hide_index=True
 )
 
@@ -45,21 +47,36 @@ if selected:
     st.subheader("Sentiment Distribution")
     sentiment_df = pd.DataFrame([{
         "Sentiment": "Positive",
-        "Percentage": row["pct_positive"]
+        "Percentage": row["positive_ratio"]
     }, {
         "Sentiment": "Neutral",
-        "Percentage": row["pct_neutral"]
+        "Percentage": row["neutral_ratio"]
     }, {
         "Sentiment": "Negative",
-        "Percentage": row["pct_negative"]
+        "Percentage": row["negative_ratio"]
     }])
-    st.bar_chart(sentiment_df.set_index("Sentiment"))
+    fig = px.pie(
+        sentiment_df,
+        names="Sentiment",
+        values="Percentage"
+    )
+    fig.update_traces(textposition="inside", textinfo="percent+label")
+    fig.update_layout(showlegend=True)
+    st.plotly_chart(fig, use_container_width=True)
 
     st.subheader("Review Topics")
     categories = get_category(selected)
     if categories:
         cat_df = pd.DataFrame(categories)
-        st.bar_chart(cat_df.set_index("category")["count"])
+        fig_cat = px.pie(
+            cat_df,
+            names="category",
+            values="count",
+            hole=0.35
+        )
+        fig_cat.update_traces(textposition="inside", textinfo="percent+label")
+        fig_cat.update_layout(showlegend=True)
+        st.plotly_chart(fig_cat, use_container_width=True)
     else:
         st.info("No category data yet, enrichment on-going")
     
@@ -69,7 +86,7 @@ if selected:
         for pp in pain_points:
             with st.expander(f"{pp['star_rating']}/5 — {pp['reviewer_name']} ({pp['date_published'].strftime('%b %Y')})"):
                 st.markdown(f"**Pain point:** {pp['pain_point']}")
-                st.markdown(f"**Actionable insight:** {pp['actionable_insight']}")
+                st.markdown(f"**Insight:** {pp['insight']}")
     else:
         st.success("No negative reviews with pain points found")
     
@@ -108,7 +125,7 @@ if selected:
                 icol2.markdown(f"**Company replied:** {'Yes' if rev['company_replied'] else 'No'}")
                 if rev["pain_point"]:
                     st.warning(f"**Pain point:** {rev['pain_point']}")
-                if rev["actionable_insight"]:
-                    st.info(f"**Actionable insight:** {rev['actionable_insight']}")
+                if rev["insight"]:
+                    st.info(f"**Insight:** {rev['insight']}")
     else:
         st.info("No reviews found for this domain.")

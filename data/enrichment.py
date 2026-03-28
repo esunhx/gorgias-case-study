@@ -1,6 +1,9 @@
 import json
-import google.generativeai as genai
+import os
+import re
+import time
 
+from google import genai
 from google.cloud import bigquery
 
 PROJECT_ID = "gorgias-case-study-491217"
@@ -9,8 +12,7 @@ TABLE_ID = "reviews"
 
 bq = bigquery.Client(project=PROJECT_ID)
 table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-model = genai.GenerativeModel("gemini-1.5-flash")
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 BATCH_SIZE = 20
 
@@ -43,15 +45,16 @@ def build_user_prompt(reviews: list[dict]) -> str:
     return f"Analyze these {len(reviews)} reviews:\n\n{review}"
 
 def enrich_batch(reviews: list[dict]) -> list[dict]:
-    resp = model.generate_content(
-        SYSTEM_PROMPT + "\n\n" + build_user_prompt(reviews)
+    resp = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=SYSTEM_PROMPT + "\n\n" + build_user_prompt(reviews)
     )
     text = resp.text.strip()
     text = re.sub(r"```json|```", "", text).strip()
     return json.loads(text)
 
 def get_reviews() -> list[dict]:
-    query = """
+    query = f"""
         SELECT domain, date_published, reviewer_name, title, text, star_rating, language
         FROM `{table_ref}`
         WHERE sentiment is NULL
@@ -98,7 +101,7 @@ def update_table(rows: list[dict]) -> None:
     job = bq.load_table_from_json(rows, temp, job_config=job_config)
     job.result()
 
-    merge_query = """
+    merge_query = f"""
         MERGE `{table_ref}` AS target
         USING (
             SELECT * 
@@ -108,7 +111,7 @@ def update_table(rows: list[dict]) -> None:
                         PARTITION BY domain, date_published, reviewer_name
                         ORDER BY domain
                     ) AS row_num
-                FROM `{temp_table}`
+                FROM `{temp}`
             )
             WHERE row_num = 1
         ) AS source
@@ -117,9 +120,9 @@ def update_table(rows: list[dict]) -> None:
         AND target.reviewer_name = source.reviewer_name
         WHEN MATCHED AND target.sentiment IS NULL THEN
             UPDATE SET
-                target.sentiment = source.sentiment
-                target.category = source.category
-                target.pain_point = source.pain_point
+                target.sentiment = source.sentiment,
+                target.category = source.category,
+                target.pain_point = source.pain_point,
                 target.insight = source.insight
     """
     bq.query(merge_query).result()
@@ -150,7 +153,7 @@ def run_enrichment() -> None:
         except (json.JSONDecodeError, IndexError) as e:
             print(f"Batch {batch_num} failed - {e}")
             continue
-        time.sleep(4)
+        time.sleep(45)
 
 if __name__ == "__main__":
     run_enrichment()
